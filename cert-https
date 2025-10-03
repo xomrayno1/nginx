@@ -1,0 +1,24 @@
+server {
+	listen 80 default_server;
+
+	server_name _;
+
+	return 301 https://$host$request_uri;
+}
+
+server {
+        listen 443 ssl default_server;
+
+        root /var/www/example;
+
+        ssl_certificate /etc/ssl/certs/54.254.175.25.pem;
+        ssl_certificate_key /etc/ssl/certs/54.254.175.25-key.pem;
+
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name example.com;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}

@@ -1,0 +1,28 @@
+cd /etc/nginx/nginx.conf
+
+edit trong http {
+
+
+}
+        log_format realip '$http_x_real_ip - $remote_addr [$time_local] '
+                      '"$request" $status $body_bytes_sent '
+                      '"$http_referer" "$http_user_agent"';
+
+        access_log /var/log/nginx/access.log realip;
+
+$remote_addr: địa chỉ máy request tới
+$http_x_real_ip: trường hợp nếu request tới là proxy thì cái này sẽ lấy ra địa chỉ của client  thay vì proxy
+
+
+proxy server phải cấu hình forward thông tin ip đến địa server tiếp nhận ở sau 
+
+
+        location / {
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header HOST $host;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+                proxy_pass http://backend;
+        #       try_files $uri $uri/ =404;
+        }

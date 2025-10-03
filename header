@@ -1,0 +1,32 @@
+upstream backend_upstream {
+    server 192.168.142.21:80;
+}
+
+server {
+    listen 443 ssl default_server;
+
+    root /var/www/example;
+
+    ssl_certificate     /etc/ssl/certs/54.254.175.25.pem;
+    ssl_certificate_key /etc/ssl/certs/54.254.175.25-key.pem;
+
+    index index.html index.htm index.nginx-debian.html;
+
+    # Nếu muốn dùng IP thay vì domain
+    server_name _;
+
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload";
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header Content-Security-Policy "default-src 'self'";
+    add_header Referrer-Policy "origin";
+
+    location / {
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_pass http://backend_upstream;
+    }
+}
